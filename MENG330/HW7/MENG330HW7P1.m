@@ -21,10 +21,13 @@ sigma = Sy/n; % sigma required
 % torque = r * F * sin theta
 % solve for F
 
-Force_BC = Torque_a / (D_diam * sind(F_angle))
+Force_BC = Torque_a / (D_diam * sind(F_angle));
+
+% sigma = Force_BC / Area
+% Area = pi * D_min_de^2 / 4
+% Area = Force_BC / sigma
+D_min_de = sqrt((4 / pi) * Force_BC / sigma) % mm
 
 
-
-
-
+%% Part B: Mod-Goodman
 
