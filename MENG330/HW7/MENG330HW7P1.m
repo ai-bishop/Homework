@@ -35,9 +35,9 @@ R_c = double(sup_eqns_soln.R_c);
 % Calculate shear and bending moments
 syms V(x) M(x) % N, N*mm 
 % x dist into BC from B
-syms x2 % to stand in for x
-V(x) = R_b * heaviside(x) + R_c * heaviside(x - BC) - Force * heaviside(x - (BC - CD));
-M(x) = int(subs(V(x), x, x2), x2, 0, x);
+syms t % to stand in for x
+V(x) = R_b * heaviside(x) + R_c * heaviside(x - BC) - Force * heaviside(x - (BC + CD));
+M(x) = int(subs(V(x), x, t), t, 0, x);
 
 
 
@@ -73,8 +73,8 @@ sigma_de = M_max * (diam / 2) / inertia;
 vm_moment = sqrt(sigma_de^2 + 3 * tau_tot^2);
 
 % solve
-diam_s = double(solve(Sy / vm_shear == SafetyFactor));
-diam_m = double(solve(Sy / vm_moment == SafetyFactor));
+diam_s = double(vpasolve(Sy / vm_shear == SafetyFactor, diam, [0 inf]));
+diam_m = double(vpasolve(Sy / vm_moment == SafetyFactor, diam, [0 inf]));
 
 diam_static = max(diam_s, diam_m)
 
