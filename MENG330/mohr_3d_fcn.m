@@ -2,7 +2,6 @@
 %   be a useful utility function
 % https://www.mathworks.com/matlabcentral/fileexchange/49941-3d-mohr-s-circle
 
-% Some modifications made by me (Lucas), and are generally noted
 
 function [tau_max, sigma_1, sigma_2, sigma_3] = mohr_3d_fcn(sigma_x, sigma_y, sigma_z, tau_xy, tau_yz, tau_xz)
     % 3D-Stresses using Mohr's Method
