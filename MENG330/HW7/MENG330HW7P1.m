@@ -100,7 +100,7 @@ mpa_ksi = 0.145038; % ksi per mpa
 
 % assume r/d = 0.02 - justifiable as sharp radii value
 % find radius in inches
-rad_in = diam * 0.02 / mm_in; % in
+rad_in = diam * 0.02 * mm_in; % in
 
 root_a = 0.246 - 3.08e-3 * (Sut * mpa_ksi) + 1.51e-5 * (Sut * mpa_ksi)^2 - 2.67e-8 * (Sut * mpa_ksi)^3; % in^0.5
 
@@ -144,26 +144,31 @@ Se = k_tot * Se_0;
 diam_fatigue = vpasolve(sigma_a / Se + sigma_m / Sut == 1 / SafetyFactor, diam, [0 inf])
 
 
+% now iterate, using the values of A15-9
+% r/d same
+D_d = D_diam / diam_fatigue; % is ~2.7
+
+
+% now find new K_t with new D_d value
+K_t = 2.8;
+
+
+% redifining needed because these values were constants and not symbolic equations
+% redefine K_f
+K_f = 1 + q * (K_t - 1);
+
+% redefine sigma_a
+sigma_a = K_f * sigma_a_0;
+
+diam_fatigue2 = vpasolve(sigma_a / Se + sigma_m / Sut == 1 / SafetyFactor, diam, [0 inf])
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+% NOW ITERATE
+% FIGURE A15-6 OR A15-9
+% GET NEW STRESS CONC VAL
+% get new K_t
 
 
 
