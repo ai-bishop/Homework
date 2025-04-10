@@ -134,7 +134,7 @@ k_c = 1; % bending
 k_d = 1; % no temp delta spec'd
 k_e = 1; % no rel spec'd
 k_f = 1; % no extra factors spec'd
-Se_fan = k_a * Se_prime;
+Se_fan = k_a * k_b * Se_prime;
 
 
 n_g_fan = 0.5 * (Sut / sigma_m_fan)^2 * (sigma_a_fan / Se_fan) * (-1 + sqrt(1+(2 * sigma_m_fan * Se_fan / (Sut * sigma_a_fan))));
@@ -144,6 +144,45 @@ n_1 = min([n_de_fan n_g_fan]);
 
 %% 2. Notch right of right gear, n
 
+% Fig A15-14 applicable here
+% r = 0.1, D = 1.75, d = 1.55
+d_notch = d_4 - 2 * rad_4;
+r_d = rad_4/d_notch;
+D_d = d_4/d_notch;
+
+K_t = 2.1; % ref Fig A15-14
+q = 0.76; % Fig 6-20
+K_f = 1 + q * (K_t - 1); 
+
+% k_b factor - shape dependent
+k_b = (d_notch / 0.3) ^ -0.107;
+
+Se_notch = k_a * k_b * Se_prime;
+
+% now compute e
+% 
+% 
+% 
+% quation for safety factor
+
+Torque;
+
+I_notch = pi * d_notch^4 / 64;
+
+
+sigma_a_notch_0 = Mom_notchrgear * (d_notch / 2) / I_notch;
+
+sigma_a_notch = K_f * sigma_a_notch_0;
+
+
+
+sigma_m_notch = tau_torsion * sqrt(3) / 1000; % convert from psi to ksi to keep units consistent
+
+n_de_notch = Sy / sigma_m_notch;
+
+n_g_notch = 0.5 * (Sut / sigma_m_notch)^2 * (sigma_a_notch / Se_notch) * (-1 + sqrt(1+(2 * sigma_m_notch * Se_notch / (Sut * sigma_a_notch))));
+
+n_3 = min([n_de_notch n_g_notch])
 
 
 
@@ -184,19 +223,7 @@ n_1 = min([n_de_fan n_g_fan]);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+%% 3. Find Deflections
 
 
 
