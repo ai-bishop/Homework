@@ -1,7 +1,10 @@
 %% Problem 2
-
+clear
+clc
 
 %% initialize values
+mm_in = 1/25.4; % mm to inches conversion factor
+
 
 % distances of the center fo the parts of interest from the leftmost point, in
 loc_keyfan = 1;
@@ -68,7 +71,9 @@ Torque = F_tang * pitch_diam / 2;
 % material properties, ksi
 Sut = 68;
 Sy = 57;
-
+Se_prime = 0.5 * Sut; % Sut is within the range to have Se' be 1/2 Sut
+% generate k_a factor - material property
+k_a = 2.7 * Sut ^ -0.265; % 0.833
 
 %% Support Reactions
 % two supports (ball bearings), one force (gear)
@@ -94,7 +99,88 @@ Mom_filletrgear = 845;
 % torsion is sigma_m
 % and bending is sigma_a
 
-%% start actual work!
+
+
+%% 1. Keyway of Fan Blade, n
+% tau = Tr/J
+J_keyfan = pi * d_1^4 / 32;
+tau_torsion = Torque * (d_1 / 2) / J_keyfan;
+
+vm_sigma_fan = tau_torsion * sqrt(3) / 1000; % convert to kips
+
+n_de_fan = Sy / vm_sigma_fan;
+
+
+% find sigma_a and sigma_m
+sigma_m_fan = vm_sigma_fan;
+
+I_keyfan = J_keyfan/2;
+
+sigma_a_fan_0 = Mom_keyfan * (d_1 / 2) / I_keyfan; % no moment here
+
+% assume r/d = 0.02 - typical keyway size
+rad_in = d_1 * mm_in * 0.02;
+
+K_t = 2.2;
+root_a = 0.246 - 3.08e-3 * (Sut) + 1.51e-5 * (Sut)^2 - 2.67e-8 * (Sut)^3; % in^0.5
+q = 1 / (1 + root_a / sqrt(rad_in));
+
+K_f = 1 + q * (K_t - 1);
+sigma_a_fan = sigma_a_fan_0 * K_f;
+
+% define k_b to k_f
+k_b = (1/0.3) ^ -0.107; % d = 1in
+k_c = 1; % bending
+k_d = 1; % no temp delta spec'd
+k_e = 1; % no rel spec'd
+k_f = 1; % no extra factors spec'd
+Se_fan = k_a * Se_prime;
+
+
+n_g_fan = 0.5 * (Sut / sigma_m_fan)^2 * (sigma_a_fan / Se_fan) * (-1 + sqrt(1+(2 * sigma_m_fan * Se_fan / (Sut * sigma_a_fan))));
+
+n_1 = min([n_de_fan n_g_fan]);
+
+
+%% 2. Notch right of right gear, n
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
