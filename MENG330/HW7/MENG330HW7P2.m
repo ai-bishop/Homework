@@ -1,6 +1,4 @@
 %% Problem 2
-clear
-clc
 
 %% initialize values
 mm_in = 1/25.4; % mm to inches conversion factor
@@ -69,6 +67,7 @@ F_comb = sqrt(F_rad^2 + F_tang^2);
 Torque = F_tang * pitch_diam / 2;
 
 % material properties, ksi
+youngs_modulus = 27000; 
 Sut = 68;
 Sy = 57;
 Se_prime = 0.5 * Sut; % Sut is within the range to have Se' be 1/2 Sut
@@ -159,11 +158,7 @@ k_b = (d_notch / 0.3) ^ -0.107;
 
 Se_notch = k_a * k_b * Se_prime;
 
-% now compute e
-% 
-% 
-% 
-% quation for safety factor
+% now compute equation for safety factor
 
 Torque;
 
@@ -182,63 +177,27 @@ n_de_notch = Sy / sigma_m_notch;
 
 n_g_notch = 0.5 * (Sut / sigma_m_notch)^2 * (sigma_a_notch / Se_notch) * (-1 + sqrt(1+(2 * sigma_m_notch * Se_notch / (Sut * sigma_a_notch))));
 
-n_3 = min([n_de_notch n_g_notch])
+n_3 = min([n_de_notch n_g_notch]);
 
 
+%% 3. Find Slopes and Deflections
+% want: slope bearings, gear; deflection gear
+
+[x,y,dydx, M, MdEI, R, diam, EI] = ShaftDeflectionEnglish(F_comb,loc_keyrgear,d,d_loc,[R_1_loc R_2_loc],l_10);
+
+% need dydx @ gear
+% need y @ bearings, gear
 
 
+[extraneous, placeholder] = min(abs(R_2_loc - x));
+slope_bearing_right = dydx(placeholder)
 
+[extraneous, placeholder] = min(abs(R_1_loc - x));
+slope_bearing_left = dydx(placeholder)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% 3. Find Deflections
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+[extraneous, placeholder] = min(abs(loc_keyrgear - x));
+slope_gear = dydx(placeholder)
+defl_gear = y(placeholder)
 
 
 
