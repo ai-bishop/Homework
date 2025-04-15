@@ -41,7 +41,7 @@ A_d = pi * diam^2 / 4;
 A_t = 84.3; % T8-1
 
 % bolt
-top = A_t * A_d * E_steel 
+top = A_t * A_d * E_steel ;
 bottom = 3.8040e+03;
 % equation is: A_d * l_t + A_t + l_d
 % but was returning the wrong result when ran
