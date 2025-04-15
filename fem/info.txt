@@ -1,0 +1,2 @@
+All code within this seciton is based upon the FEM code provided by Dr. F.
+File P6.1 is based upon main_simpleBar.jl of the FEM code provided.

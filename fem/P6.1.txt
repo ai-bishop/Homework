@@ -1,0 +1,17 @@
+TODO
+
+modify main_simpleBar.jl - coipied as P6.1.jl - to have the two element line be split into two sections?
+
+
+
+implement basic conditions from HW6.1 - just force, all else already inputted
+
+add 3node quad elements to Bar1D.jl - change types? what else?
+
+Equilibrium in a spinning frame of reference - how do?
+show f = ρAΩ^2 x - need defintiion
+ρ = density
+Ω = angular velocity
+Derive analytical solution for displacements + stresses
+Compare linear element results (for both displacements and stresses)
+what do to match results exactly?
