@@ -93,3 +93,5 @@ fig = Figure()
 ax = Axis(fig[1,1], yreversed=true)
 spy!(ax,K)
 fig
+
+sleep(60) # to give time to show plots
