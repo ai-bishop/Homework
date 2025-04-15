@@ -16,6 +16,23 @@ end
 line(r) = line(r[1])
 
 """
+    parb(r)
+
+Shape functions for a 3 node parabola
+`` r \\in [-1,1] ``
+"""
+
+function parb(r::AbstractFloat)
+
+    NN = [0.5 * r * (r-1), 0.5 * r * (r + 1), 1 - r^2]
+    # [0.5 * (r-1) + 0.5 * r, 0.5 * (r+1) + 0.5 * r, -2 * r]
+    Nr = [r - 0.5, r + 0.5, -2 * r]
+
+    return NN, Nr
+end
+parb(r) = parb(r[1])
+
+"""
     triangles(r,s)
 
 Shape functions for a 3 node triangle
@@ -63,6 +80,8 @@ function shapefunc(el_type::String)
         return triangle
     elseif el_type == "quad"
         return quad
+    elseif el_type == "parb"
+        return parb
     else
         error("Element type not found")
     end

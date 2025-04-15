@@ -1,2 +1,29 @@
 All code within this seciton is based upon the FEM code provided by Dr. F.
-File P6.1 is based upon main_simpleBar.jl of the FEM code provided.
+
+Problem 6.1: TODO
+
+main_simpleBar.jl:
+    have the two element line be split into two sections? - completed???
+    implement force - f = ρAΩ^2 x
+
+Bar1D.jl
+    add 3node quad elements - change types? what else? - completed??
+    COMPLETED - add quad rules to element_stiffness (like func after - in class deriv)
+        COMPLETE - pass to assemble_stiffness
+
+SimpleVisualization.jl
+    update? - dbl check but i dont think so
+
+Shapefunctions.jl
+    COMPLETE - update shape functions to 3 note line
+
+change forcing + mesh
+
+
+
+
+
+Equilibrium in a spinning frame of reference - how do?
+Derive analytical solution for displacements + stresses
+Compare linear element results (for both displacements and stresses)
+what do to match results exactly?

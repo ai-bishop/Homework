@@ -6,7 +6,7 @@ using .Shapefunctions
 include("Preprocess.jl")
 using .Preprocess
 
-function assemble_stiffness(mesh, properties)
+function assemble_stiffness(mesh, properties, quad_rules)
     ned = mesh.ned
     totaldofs = ned * mesh.nnp
     K = zeros(totaldofs, totaldofs)
@@ -22,7 +22,7 @@ function assemble_stiffness(mesh, properties)
             A = ien[e, 1:nen]
             xe = mesh.x[A]
 
-            ke = element_stiffness(xe, properties)
+            ke = element_stiffness(xe, properties, quad_rules)
 
             # assemble element stiffness into the Global stiffness Matrix
             for loop1 in 1:nee
@@ -37,13 +37,17 @@ function assemble_stiffness(mesh, properties)
     return K
 end
 
-function element_stiffness(xe, properties)
-    Le = abs(xe[2] - xe[1])
+function element_stiffness(xe, properties, quad_rules)
+    
     E = properties.E
     A = properties.A
+    F = properties.f0
+    NN, Nr = shapefunc(line3) # shape function
+    J = inv(Nr); # jacobian
 
-    ke = E * A / Le * [+1.0 -1.0;
-                       -1.0 +1.0]
+    # rewrite so like following function in derivation - similar to lecture notes
+    
+    ke = E * A * sum((1/J) * transpose(NN) * NN * F, [1,3])   
 
     return ke
 end

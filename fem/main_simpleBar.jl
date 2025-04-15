@@ -15,41 +15,30 @@ include("Bar1D.jl")
 include("SimpleVisualization.jl")
 using GLMakie
 
-quad_rules = Dict("line" => Quadrature.gauss_legendre_1d(2))
+quad_rules = Dict("line" => Quadrature.gauss_legendre_1d(3)) # changed input
 
 ## Properties of the uniform body
 prop = (E=1.0, # Young's Modulus [F/m^2]
     A=1.0, # cross-sectional area [L^2]
     L=1.0, # length [L]
-    f0=1.0, # loading [F/L]
+    f0=1.0, # loading [F/L] # change
 ) 
 
 ## mesh connectivity
 # IEN(e,a)
 nnp = 5 # number of nodes
-nel = nnp - 1 # number of elements
+nel = nnp - 2 # number of elements
 nee = 2 # number of equations per element
-IEN = Dict("line" => zeros(Int, nel, nee))
-# let's use the same ordering from class
-IEN["line"][1,:] = [1, 3]
-IEN["line"][2,:] = [3, 4]
-IEN["line"][3,:] = [4, 5]
-IEN["line"][4,:] = [5, 2]
+IEN = Dict("parb" => zeros(Int, nel, nee)) 
+# same ordering as from class 
+IEN["parb"][1,:] = [1, 3, 4] 
+IEN["parb"][2,:] = [3, 4, 5] 
+IEN["parb"][3,:] = [4, 5, 6] 
 
 # make the list of node locations
 x = LinRange(0, prop.L, nnp) |> collect
 # fix them to match where we put the nodes
 x[:] = x[[1,5,2,3,4]]
-
-## Alternate: using mode nodes
-nnp = 300 # number of nodes
-nel = nnp - 1 # number of elements
-nee = 2 # number of equations per element
-IEN = Dict("line" => zeros(Int, nel, nee))
-for e in 1:nel
-    IEN["line"][e, :] = [e, e + 1]
-end
-x = LinRange(0, prop.L, nnp) |> collect
 
 ## Essential Boundary Conditions: [i,A]
 BC_fix_list = zeros(Bool, 1, nnp)
@@ -66,7 +55,7 @@ f(x) = prop.f0
 m = Preprocess.build_mesh(x, [], [], IEN, 1, BC_fix_list, BC_g_list)
 
 ## Assemble the global matrices
-K = Bar1D.assemble_stiffness(m, prop)
+K = Bar1D.assemble_stiffness(m, prop, quad_rules)
 F = Bar1D.assemble_rhs(m, f, quad_rules)
 
 ## Solve the system
