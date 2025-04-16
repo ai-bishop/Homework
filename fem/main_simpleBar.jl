@@ -17,11 +17,19 @@ using GLMakie
 
 quad_rules = Dict("line" => Quadrature.gauss_legendre_1d(3)) # changed input
 
+A=1.0, # cross-sectional area [L^2]
+L=1.0, # length [L]
+ρ = 1.0, # mass per length [kg/L^3]
+Ω = 1.0, # angular velocity [rad/s]
+
 ## Properties of the uniform body
 prop = (E=1.0, # Young's Modulus [F/m^2]
-    A=1.0, # cross-sectional area [L^2]
-    L=1.0, # length [L]
-    f0=1.0, # loading [F/L] # change
+    A=A, # cross-sectional area [L^2]
+    L=L, # length [L]
+    ρ = ρ, # mass per length [kg/L^3]
+    Ω = Ω, # angular velocity [rad/s]
+    f0 = ρ * A * Ω^2; # loading [F/L] - change to f = ρAΩ^2 x
+    # syntax? how define as a changing variable?
 ) 
 
 ## mesh connectivity
@@ -49,7 +57,7 @@ BC_g_list = zeros(1, nnp)
 BC_g_list[1, 1] = 0.0
 
 ## Loading force
-f(x) = prop.f0
+f(x) = prop.f0 * x
 
 ## Build mesh
 m = Preprocess.build_mesh(x, [], [], IEN, 1, BC_fix_list, BC_g_list)

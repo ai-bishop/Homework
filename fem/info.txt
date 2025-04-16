@@ -3,21 +3,22 @@ All code within this seciton is based upon the FEM code provided by Dr. F.
 Problem 6.1: TODO
 
 main_simpleBar.jl:
-    have the two element line be split into two sections? - completed???
-    implement force - f = ρAΩ^2 x
+    COMPLETED - have the two element line be split into two sections? - completed???
+    COMPLETED - implement force - changed, successful?
+    COMPLETED - change forcing + mesh
+
 
 Bar1D.jl
-    add 3node quad elements - change types? what else? - completed??
+    COMPLETED - add 3node quad elements - change types? what else? - completed??
     COMPLETED - add quad rules to element_stiffness (like func after - in class deriv)
         COMPLETE - pass to assemble_stiffness
 
 SimpleVisualization.jl
-    update? - dbl check but i dont think so
+    COMPLETE - dbl check but i dont think so
 
 Shapefunctions.jl
     COMPLETE - update shape functions to 3 note line
 
-change forcing + mesh
 
 
 

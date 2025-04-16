@@ -37,17 +37,29 @@ function assemble_stiffness(mesh, properties, quad_rules)
     return K
 end
 
-function element_stiffness(xe, properties, quad_rules)
+function element_stiffness(xe, properties, quad_rules) # looks like element_forcing
     
+    # check probs
     E = properties.E
     A = properties.A
     F = properties.f0
-    NN, Nr = shapefunc(line3) # shape function
-    J = inv(Nr); # jacobian
 
-    # rewrite so like following function in derivation - similar to lecture notes
-    
-    ke = E * A * sum((1/J) * transpose(NN) * NN * F, [1,3])   
+    ned = 1
+    nen = length(xe)
+    nee = ned * nen
+
+    # integration loop
+    for (ξ, w) in quad_rules.iterator
+
+        # Evaluate the shape function
+        Ne, Nξ = N(ξ) # shape function (not used) and shape function derivative
+
+        # build Jacobian
+        detJ = dot(Nξ, xe)
+
+        # integrate ke:
+        ke += transpose(Nξ) * Nξ * detJ * E * A * w
+    end
 
     return ke
 end
