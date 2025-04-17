@@ -17,12 +17,18 @@ function assemble_stiffness(mesh, properties, quad_rules)
         nen = std_element_defs[element_type].nen
         nee = ned * nen
         LM = mesh.LM[element_type]
+        element_quad_rule = quad_rules[element_type]
+        N = shapefunc(element_type)
+
+        
+
 
         for e in 1:nel
             A = ien[e, 1:nen]
             xe = mesh.x[A]
+            
 
-            ke = element_stiffness(xe, properties, quad_rules)
+            ke = element_stiffness(xe, N, properties, element_quad_rule)
 
             # assemble element stiffness into the Global stiffness Matrix
             for loop1 in 1:nee
@@ -37,7 +43,7 @@ function assemble_stiffness(mesh, properties, quad_rules)
     return K
 end
 
-function element_stiffness(xe, properties, quad_rules) # looks like element_forcing
+function element_stiffness(xe, N, properties, quad_rules) # looks like element_forcing
     
     # check probs
     E = properties.E
@@ -47,6 +53,7 @@ function element_stiffness(xe, properties, quad_rules) # looks like element_forc
     ned = 1
     nen = length(xe)
     nee = ned * nen
+    ke = zeros(nee, nee)
 
     # integration loop
     for (ξ, w) in quad_rules.iterator
@@ -58,7 +65,7 @@ function element_stiffness(xe, properties, quad_rules) # looks like element_forc
         detJ = dot(Nξ, xe)
 
         # integrate ke:
-        ke += transpose(Nξ) * Nξ * detJ * E * A * w
+        ke += Nξ * Nξ' * E * A * w / detJ
     end
 
     return ke

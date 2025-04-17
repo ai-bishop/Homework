@@ -32,7 +32,7 @@ p_g = 6; % MPA
 % T A-31:
 H = 10.8;
 % L = l + H = 50.8
-L = 55 % rounded up
+L = 60 % rounded up
 
 L_t = 2 * diam + 6;
 l_d = L - L_t;

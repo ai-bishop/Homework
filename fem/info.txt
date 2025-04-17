@@ -19,12 +19,10 @@ SimpleVisualization.jl
 Shapefunctions.jl
     COMPLETE - update shape functions to 3 note line
 
+COMPLETE - Equilibrium in a spinning frame of reference - how do?
 
 
 
-
-
-Equilibrium in a spinning frame of reference - how do?
 Derive analytical solution for displacements + stresses
 Compare linear element results (for both displacements and stresses)
 what do to match results exactly?
