@@ -9,13 +9,15 @@ E_ci = 100; % GPA
 L_A = 20;
 L_B = 20;
 L_C = 100;
-L_D = 250;
+L_D = 150;
 L_E = 200;
 L_F = 300;
 diam = 12;
 l = 40;
 
-N = 10; % N
+A_g = pi * (L_D / 2) ^ 2; % area of head of gasket
+
+N = 10; % Number bolts
 
 p_g = 6; % MPA
 
@@ -41,11 +43,7 @@ A_d = pi * diam^2 / 4;
 A_t = 84.3; % T8-1
 
 % bolt
-top = A_t * A_d * E_steel ;
-bottom = 1.2453e+03;
-% equation is: A_d * l_t + A_t + l_d
-% but was returning the wrong result when ran
-k_b = top/bottom;
+k_b = (A_t * A_d * E_steel) / (A_d * l_t + A_t * l_d);
 
 % members
 % steel
@@ -67,13 +65,14 @@ S_p = 650; % MPA, T8-11
 % assume nonpermanent connections
 F_i = 0.75 * A_t * S_p * 10^-3; % kN
 
-P = (6 * pi * 100^2 / 4) * 10^-3 / 10; % kN/bolt
+P = p_g * A_g * 10^-3 / N; % kN/bolt
+
 
 n_p = S_p * A_t * 10^-3 / (C * P + F_i)
 
 n_l = (S_p * A_t  * 10^-3 - F_i) / (C * P)
 
-n_0 = F_i / (P * (1 - C)) / 10
+n_0 = F_i / (P * (1 - C))
 
 
 
