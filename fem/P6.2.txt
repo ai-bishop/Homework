@@ -1,0 +1,12 @@
+P6.2
+setup + solve problem 3.1 - conduction
+implement 9-node quadratic elements
+
+TODO:
+create script with boundary conditions + other parms
+create driver file
+
+
+Completed:
+create 9-node quadratic shape function
+

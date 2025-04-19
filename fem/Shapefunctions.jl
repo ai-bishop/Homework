@@ -73,6 +73,43 @@ function quad(r, s)
 end
 quad(x) = quad(x[1], x[2])
 
+
+
+"""
+    quad2d(r,s)
+
+Shape functions for a 9 node quadratic element
+`` r \\in [-1,1] ``, `` s \\in [-1,1] ``
+"""
+
+function quad2d(r,s) # r = x, s = y
+
+    NN = [ 
+            1/4 * r * (r - 1) * s * (s - 1), 1/4 * r * (r + 1) * s * (s - 1), 1/4 * r * (r + 1) * s * (s + 1),
+            1/4 * r * (r - 1) * s * (s + 1), 1/2 * (1 - r^2) * s * (s + 1), 1/2 * r * (r - 1) * (1 - s^2), 
+            1/2 * (1 - r^2) * s * (s - 1), 1/2 * r * (r + 1) * (1 - s^2), (1 - r^2) * (1 - s^2)            
+    ]
+
+    Nr = [ 
+            1/4 * (2 * r - 1) * s * (s - 1), 1/4 * (2 * r + 1) * s * (s - 1), 1/4 * (2 * r + 1) * s * (s + 1),
+            1/4 * (2 * r - 1) * s * (s + 1), 1/2 * (-2 * r) * s * (s + 1), 1/2 * (2 * r - 1) * (1 - s^2),
+            1/2 * (-2 * r) * s * (s - 1), 1/2 * (2 * r + 1) * (1 - s^2), -2 * r * (1 - s^2)
+    ]
+
+    Ns = [
+            1/4 * r * (r - 1) * (2 * s - 1), 1/4 * r * (r + 1) * (2 * s - 1), 1/4 * r * (r + 1) * (2 * s + 1),
+            1/4 * r * (r - 1) * (2 * s + 1), 1/2 * (1 - r^2) * (2 * s + 1), 1/2 * r * (r - 1) * (-2 * s),
+            1/2 * (1 - r^2) * (2 * s - 1), 1/2 * r * (r + 1) * (-2 * s), (1 - r^2) * (-2 * s)
+    ]
+
+    return NN, Nr, Ns
+end
+quad2d(r,s) = quad2d(x[1],x[2])
+
+
+
+
+
 function shapefunc(el_type::String)
     if el_type == "line"
         return line
@@ -82,6 +119,8 @@ function shapefunc(el_type::String)
         return quad
     elseif el_type == "parb"
         return parb
+    elseif el_type == "quad2d"
+        return quad2d
     else
         error("Element type not found")
     end
