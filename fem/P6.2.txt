@@ -3,7 +3,6 @@ setup + solve problem 3.1 - conduction
 implement 9-node quadratic elements
 
 TODO: in driver file
-boundary conditions + other parms
 graphs
 create equivalent to Bar1D file - but for 2D
 
@@ -13,4 +12,10 @@ Completed:
 create 9-node quadratic shape function
 quadrature updated for 2d
 preprocess.std_element_defs updated for quad2d
+boundary conditions + other parms
 
+
+
+
+# to get gauss_legendre points, do one in xdim and one in ydim
+# using Quadrature.gauss_legendre_1d(3)

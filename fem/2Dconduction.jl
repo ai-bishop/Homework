@@ -39,9 +39,9 @@ IEN["quad2d"][14,:] = [17, 18, 22, 23]
 IEN["quad2d"][15,:] = [18, 19, 23, 24]
 IEN["quad2d"][16,:] = [19, 20, 24, 25]
 
-# make the list of node locations
-x = LinRange(0, 1, nez) |> collect
-y = LinRange(0, 1, nez) |> collect
+# make the list of node locations - is linearized to comply w IEN
+nodes = LinRange(0, 1, nnp) |> collect
+# y = LinRange(0, 1, nez) |> collect
 
 ## boundary Conditions
 
@@ -52,25 +52,54 @@ BC_fix_list = zeros(Bool, 1, nnp)
 BC_g_list = zeros(1, nnp)
 # have to write them all individually :(
 # unlike MATLAB, cannot write to multiple array locations at once
-BC_g_list[[21, 22, 23, 24, 25]] = 0.0 # bottom row, all 0's
-BC_g_list[1, 5] = 0.0 # third corner
-BC_g_list[1,1] = 0.0 # fourth corner
-BC_g_list[2:4,1] = 100.0 # top
-BC_g_list[1, 2:4] = 75.0 # left
-BC_g_list[5, 2:4] = 50.0 # right
+
+# reads right then update
+# so 1 is bottom left, 5 is bottom right, 21 is top left, 25 is top right
+
+# corners - 0
+BC_g_list[1] = 0.0 # first corner
+BC_g_list[5] = 0.0 # second corner
+BC_g_list[21] = 0.0 # third corner
+BC_g_list[25] = 0.0 # fourth corner
+
+# top - 100
+BC_g_list[21] = 100.0
+BC_g_list[22] = 100.0
+BC_g_list[23] = 100.0
+
+# left - 75
+BC_g_list[6] = 75.0
+BC_g_list[11] = 75.0 
+BC_g_list[16] = 75.0
+
+# right - 50
+BC_g_list[10] = 50.0
+BC_g_list[15] = 50.0
+BC_g_list[20] = 50.0
+
+# bottom - 0
+BC_g_list[2] = 0.0
+BC_g_list[3] = 0.0
+BC_g_list[4] = 0.0
 
 
-mesh = Preprocess.build_mesh(x, y, [], IEN, 1, BC_fix_list, BC_g_list)
+
+mesh = Preprocess.build_mesh(x, [], [], IEN, 1, BC_fix_list, BC_g_list)
+
+
+
+## Assemble the global matrices
+
+
+## Solve the system
+
+
+# apply essential BCs in q[r2]
+
+
+
+# solve
 
 
 
 
-
-
-
-
-
-
-
-# to get gauss_legendre points, do one in xdim and one in ydim
-# using Quadrature.gauss_legendre_1d(3)
