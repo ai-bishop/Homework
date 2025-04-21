@@ -1,0 +1,76 @@
+using Pkg
+Pkg.activate(".")
+
+include("Preprocess.jl")
+include("Quadrature.jl")
+include("Grid2D.jl")
+include("SimpleVisualization.jl")
+using GLMakie
+
+quad_rules = Dict("quad2d" => Quadrature.gauss_legendre_1d(3)) # use for both directions/dimensions
+
+
+
+# is a 5x5 mesh
+
+## mesh connectivity
+# IEN(e,a)
+nnp = 25 # number of nodes
+nez = 5 # sqrt of nnp - # nodes in xdim or ydim
+nel = ((nnp^0.5 - 1) |> Int )^2 # number of elements; updated formula
+nee = 4 # number of equations per element
+IEN = Dict("quad2d" => zeros(Int, nel, nee)) 
+# standard ordering
+#
+IEN["quad2d"][1,:] = [1, 2, 6, 7]
+IEN["quad2d"][2,:] = [2, 3, 7, 8]
+IEN["quad2d"][3,:] = [3, 4, 8, 9]
+IEN["quad2d"][4,:] = [4, 5, 9, 10]
+IEN["quad2d"][5,:] = [6, 7, 11, 12]
+IEN["quad2d"][6,:] = [7, 8, 12, 13]
+IEN["quad2d"][7,:] = [8, 9, 13, 14]
+IEN["quad2d"][8,:] = [9, 10, 14, 15]
+IEN["quad2d"][9,:] = [11, 12, 16, 17]
+IEN["quad2d"][10,:] = [12, 13, 17, 18]
+IEN["quad2d"][11,:] = [13, 14, 18, 19]
+IEN["quad2d"][12,:] = [14, 15, 19, 20]
+IEN["quad2d"][13,:] = [16, 17, 21, 22]
+IEN["quad2d"][14,:] = [17, 18, 22, 23]
+IEN["quad2d"][15,:] = [18, 19, 23, 24]
+IEN["quad2d"][16,:] = [19, 20, 24, 25]
+
+# make the list of node locations
+x = LinRange(0, 1, nez) |> collect
+y = LinRange(0, 1, nez) |> collect
+
+## boundary Conditions
+
+# Essential Boundary Conditions: [i,A]
+BC_fix_list = zeros(Bool, 1, nnp)
+
+# bc values
+BC_g_list = zeros(1, nnp)
+# have to write them all individually :(
+# unlike MATLAB, cannot write to multiple array locations at once
+BC_g_list[[21, 22, 23, 24, 25]] = 0.0 # bottom row, all 0's
+BC_g_list[1, 5] = 0.0 # third corner
+BC_g_list[1,1] = 0.0 # fourth corner
+BC_g_list[2:4,1] = 100.0 # top
+BC_g_list[1, 2:4] = 75.0 # left
+BC_g_list[5, 2:4] = 50.0 # right
+
+
+mesh = Preprocess.build_mesh(x, y, [], IEN, 1, BC_fix_list, BC_g_list)
+
+
+
+
+
+
+
+
+
+
+
+# to get gauss_legendre points, do one in xdim and one in ydim
+# using Quadrature.gauss_legendre_1d(3)

@@ -57,7 +57,8 @@ const std_element_defs = Dict(
     "line" => element_def("Linear Line", 2, 1, 1),
     "triangle" => element_def("Linear Triangle", 3, 2, 2),
     "quad" => element_def("4 node quadrilateral", 4, 2, 3),
-    "parb" => element_def("parb", 3, 1, 1))
+    "parb" => element_def("parb", 3, 1, 1),
+    "quad2d" => element_def("quad2d", 9, 2, 10))
 
 
 function build_ID(nnp, g_list, ned, fix_list)

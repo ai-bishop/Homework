@@ -41,16 +41,6 @@ IEN["parb"][2,:] = [3, 5, 4]
 # make the list of node locations
 x = LinRange(0, prop.L, nnp) |> collect
 
-## Alternate: using mode nodes
-#nnp = 300 # number of nodes
-#nel = nnp - 2 # number of elements
-#nee = 3 # number of equations per element
-#IEN = Dict("parb" => zeros(Int, nel, nee))
-#for e in 1:nel
-#    IEN["parb"][e, :] = [e, e + 1, e + 2]
-#end
-#x = LinRange(0, prop.L, nnp) |> collect
-
 ## Essential Boundary Conditions: [i,A]
 BC_fix_list = zeros(Bool, 1, nnp)
 BC_fix_list[1, 1] = true
