@@ -7,7 +7,7 @@ include("Grid2D.jl")
 include("SimpleVisualization.jl")
 using GLMakie
 
-quad_rules = Dict("quad2d" => Quadrature.gauss_legendre_2d(3,3)) # use for both directions/dimensions
+quad_rules = Dict("quad" => Quadrature.gauss_legendre_2d(3,3)) # use for both directions/dimensions
 
 
 
@@ -17,42 +17,87 @@ quad_rules = Dict("quad2d" => Quadrature.gauss_legendre_2d(3,3)) # use for both 
 # IEN(e,a)
 nnp = 25 # number of nodes
 nez = 5 # sqrt of nnp - # nodes in xdim or ydim
-nel = ((nnp^0.5 - 2) |> Int )^2 # number of elements; updated formula
-nee = 9 # number of equations per element
-IEN = Dict("quad2d" => zeros(Int, nel, nee)) 
+nel = ((nnp^0.5 - 1) |> Int )^2 # number of elements; updated formula
+nee = 4 # number of equations per element
+IEN = Dict("quad" => zeros(Int, nel, nee)) 
 # standard ordering
 #
-IEN["quad2d"][1,:] = [1, 3, 13, 11, 2, 8, 12, 6, 7]
-IEN["quad2d"][2,:] = [2, 4, 14, 12, 3, 9, 13, 7, 8]
-IEN["quad2d"][3,:] = [3, 5, 15, 13, 4, 10, 14, 8, 9]
+IEN["quad"][1,:] = [1, 2, 7, 6]
+IEN["quad"][2,:] = [2, 3, 8, 7]
+IEN["quad"][3,:] = [3, 4, 9, 8]
+IEN["quad"][4,:] = [4, 5, 10, 9]
 
-IEN["quad2d"][4,:] = [6, 8, 18, 16, 7, 13, 17, 11, 12]
-IEN["quad2d"][5,:] = [7, 9, 19, 17, 8, 14, 18, 12, 13]
-IEN["quad2d"][6,:] = [8, 10, 20, 18, 9, 15, 19, 13, 14]
 
-IEN["quad2d"][7,:] = [11, 13, 23, 21, 12, 18, 22, 16, 17]
-IEN["quad2d"][8,:] = [12, 14, 24, 22, 13, 19, 23, 17, 18]
-IEN["quad2d"][9,:] = [13, 15, 25, 23, 14, 20, 24, 18, 19]
+IEN["quad"][5,:] = [6, 7, 12, 11]
+IEN["quad"][6,:] = [7, 8, 13, 12]
+IEN["quad"][7,:] = [8, 9, 14, 13]
+IEN["quad"][8,:] = [9, 10, 15, 14]
 
+
+IEN["quad"][9,:] = [11, 12, 17, 16]
+IEN["quad"][10,:] = [12, 13, 18, 17]
+IEN["quad"][11,:] = [13, 14, 19, 18]
+IEN["quad"][12,:] = [14, 15, 20, 19]
+
+IEN["quad"][13,:] = [16, 17, 22, 21]
+IEN["quad"][14,:] = [17, 18, 23, 22]
+IEN["quad"][15,:] = [18, 19, 24, 23]
+IEN["quad"][16,:] = [19, 20, 25, 24]
 
 
 
 # make the list of node locations - is linearized to comply w IEN
 nodes = LinRange(0, 1, nnp) |> collect
-# y = LinRange(0, 1, nez) |> collect
+xnodes = LinRange(0, 1, nez) |> collect
+ynodes = LinRange(0, 1, nez) |> collect
 
 ## boundary Conditions
 
 # Essential Boundary Conditions: [i,A]
 BC_fix_list = zeros(Bool, 1, nnp)
+BC_fix_list2 = zeros(Bool, nez, nez)
+BC_fix_list2[1,2] = true
+BC_fix_list2[1,3] = true
+BC_fix_list2[1,4] = true
+BC_fix_list2[2,1] = true
+BC_fix_list2[3,1] = true
+BC_fix_list2[4,1] = true
+BC_fix_list2[5,2] = true
+BC_fix_list2[5,3] = true
+BC_fix_list2[5,4] = true
+BC_fix_list2[2,5] = true
+BC_fix_list2[3,5] = true
+BC_fix_list2[4,5] = true
 
 # bc values
-BC_g_list = zeros(1, nnp)
+BC_g_list2 = zeros(nez, nez)
+
 # have to write them all individually :(
 # unlike MATLAB, cannot write to multiple array locations at once
 
-# reads right then update
+
+# corners, bottom - already set
+
+# top - 100
+BC_g_list2[1,2] = 100.0
+BC_g_list2[1,3] = 100.0
+BC_g_list2[1,4] = 100.0
+
+# left - 75
+BC_g_list2[2,1] = 75.0
+BC_g_list2[3,1] = 75.0
+BC_g_list2[4,1] = 75.0
+
+# right - 50
+BC_g_list2[2,5] = 50.0
+BC_g_list2[3,5] = 50.0
+BC_g_list2[4,5] = 50.0
+
+
+# reads right then up
 # so 1 is bottom left, 5 is bottom right, 21 is top left, 25 is top right
+
+BC_g_list = zeros(1, nnp)
 
 # corners - 0
 BC_g_list[1] = 0.0 # first corner
@@ -82,29 +127,28 @@ BC_g_list[4] = 0.0
 
 
 ## Build mesh
-mesh = Preprocess.build_mesh(nodes, [], [], IEN, 1, BC_fix_list, BC_g_list)
+mesh = Preprocess.build_mesh(xnodes, ynodes, [], IEN, 1, BC_fix_list2, BC_g_list2)
 
-## Assemble the global matrices
-K = Grid2D.assemble_stiffness(m, prop, quad_rules)
-F = Grid2D.assemble_rhs(m, ___, quad_rules)
-
-
-
-
-
-
-
-
+## Assemble the global matrix
+T_matrix = Grid2D.assemble_stiffness(mesh, quad_rules)
 
 ## Solve the system
+q = zeros(m.nnp * m.ned)
 
+ 
 
 # apply essential BCs in q[r2]
+ 
 
 
+
+
+# K = stiffness
 
 # solve
-
+r1 = mesh.free_range
+r2 = mesh.freefix_range
+q[r1] = T_matrix[r1, r1] \ (T_matrix[r1, r2] * q[r2])
 
 
 

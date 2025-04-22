@@ -11,23 +11,39 @@ using .Preprocess
 
 
 
+function assemble_resistance(mesh, BC_g_list, nnp)
 
+    if nnp == 25
+        # is 5x5 mesh
+        # write temperatures as functions of adjacent nodes for interior
+        locns = mesh.x
 
+        # TempMatrix(i) = (locns(i-1) + locns(i+1) + locns(i-5) + locns(i+5)) / 4
+        InteriorMatrix = zeros(3,3);
 
+        InteriorMatrix[1] = (locns[6] + locns[8] + locns[2] + locns[12]) / 4 # 7
+        InteriorMatrix[2] = (locns[7] + locns[9] + locns[3] + locns[13]) / 4 # 8
+        InteriorMatrix[3] = (locns[8] + locns[10] + locns[4] + locns[14]) / 4 # 9
 
+        InteriorMatrix[4] = (locns[11] + locns[13] + locns[7] + locns[17]) / 4 # 12
+        InteriorMatrix[5] = (locns[12] + locns[14] + locns[8] + locns[18]) / 4 # 13
+        InteriorMatrix[6] = (locns[13] + locns[15] + locns[9] + locns[19]) / 4 # 14
 
+        InteriorMatrix[7] = (locns[16] + locns[18] + locns[12] + locns[22]) / 4 # 17
+        InteriorMatrix[8] = (locns[17] + locns[19] + locns[13] + locns[23]) / 4 # 18
+        InteriorMatrix[9] = (locns[18] + locns[20] + locns[14] + locns[24]) / 4 # 19
 
+        return InteriorMatrix
 
+    else
 
+        error("size unaccounted for. please expand code.")
 
+    end
 
+end
 
-
-
-
-
-
-function assemble_stiffness(mesh, properties, quad_rules)
+function assemble_stiffness(mesh, quad_rules)
     ned = mesh.ned
     totaldofs = ned * mesh.nnp
     K = zeros(totaldofs, totaldofs)
@@ -44,17 +60,16 @@ function assemble_stiffness(mesh, properties, quad_rules)
         for e in 1:nel
             A = ien[e, 1:nen]
             xe = mesh.x[A]
-            ye = mesh.y[A]
             
 
-            ke = element_stiffness(xe, ye, N, properties, element_quad_rule)
+            hf = element_stiffness(xe, N, element_quad_rule)
 
             # assemble element stiffness into the Global stiffness Matrix
             for loop1 in 1:nee
                 i = LM[loop1, e]
                 for loop2 in 1:nee
                     j = LM[loop2, e]
-                    K[i, j] += ke[loop1, loop2]
+                    K[i, j] += hf[loop1, loop2]
                 end
             end
         end
@@ -62,14 +77,9 @@ function assemble_stiffness(mesh, properties, quad_rules)
     return K
 end
 
-function element_stiffness(xe, ye, N, properties, quad_rules) # looks like element_forcing
-    
-    # check probs
-    E = properties.E
-    A = properties.A
-    F = properties.f0
+function element_stiffness(xe, N, quad_rules) # looks like element_forcing
 
-    ned = length(ye)
+    ned = 1
     nen = length(xe)
     nee = ned * nen
     ke = zeros(nee, nee)
@@ -83,9 +93,17 @@ function element_stiffness(xe, ye, N, properties, quad_rules) # looks like eleme
         # build Jacobian
         detJ = dot(Nξ, xe) - dot(Nη, ye)
 
+        # create surface flux
+        hf = 1 # arbitrary value
+        h = N(ξ,η)' * hf * detJ * w
+
+        # boundary
+        d_edge = ( (Nξ * ξ)^2 + (Nη * η)^2 * (Nξ * η)^2 + (Nη * ξ)^2)^0.5
+
         # integrate ke: 
         # is this accurate ?????
-        ke += Nξ * Nξ' * Nη * Nη' * E * A * w / detJ
+        ke += h * N(ξ,η)' * N(ξ,η)  * d_edge
+        
     end
 
     return ke

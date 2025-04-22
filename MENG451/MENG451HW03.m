@@ -98,7 +98,6 @@ i = 0; % initialize i
 trigger = 0; % initalize trigger for function
 margin1 = 0.01; % toilerance for s
 margin2 = 0.01; % tolerance for r
-iter = 0;
 safetyfactor = 1000;
 [m,n] = size(Temperature);
 

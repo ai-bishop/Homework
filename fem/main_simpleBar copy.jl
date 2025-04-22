@@ -56,7 +56,7 @@ f(x) = prop.f0
 m = Preprocess.build_mesh(x, [], [], IEN, 1, BC_fix_list, BC_g_list)
 
 ## Assemble the global matrices
-K = Bar1D.assemble_stiffness(m, prop)
+K = Bar1D.assemble_stiffness(m, prop, quad_rules)
 F = Bar1D.assemble_rhs(m, f, quad_rules)
 
 ## Solve the system

@@ -18,7 +18,8 @@ struct quadrule2
     dim::Int
     ξ::Array
     η::Array
-    w::Array
+    w1::Array
+    w2::Array
     iterator::Any
 end
 
@@ -66,8 +67,8 @@ function gauss_legendre_2d(m,n)
     w1 = @. 2V1[1, p1]^2
     w2 = @. 2V2[1, p2]^2
 
-    return quadrule2("2D GL", m, n, ξ, η, w,
-                    zip(eachrow(ξ), w1), zip(eachrow(η), w2))
+    return quadrule2("2D GL", m, n, 2, ξ, η, w1, w2,
+                    zip(eachrow(ξ), w1, eachrow(η)))
 
 end
 
