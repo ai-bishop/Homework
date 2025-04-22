@@ -1,10 +1,11 @@
 P6.2
 setup + solve problem 3.1 - conduction
-implement 9-node quadratic elements
+
 
 TODO: in driver file
-graphs
 create equivalent to Bar1D file - but for 2D
+
+graphs?
 
 
 
@@ -13,6 +14,7 @@ create 9-node quadratic shape function
 quadrature updated for 2d
 preprocess.std_element_defs updated for quad2d
 boundary conditions + other parms
+implement 9-node quadratic elements
 
 
 

@@ -7,7 +7,7 @@ include("Grid2D.jl")
 include("SimpleVisualization.jl")
 using GLMakie
 
-quad_rules = Dict("quad2d" => Quadrature.gauss_legendre_1d(3)) # use for both directions/dimensions
+quad_rules = Dict("quad2d" => Quadrature.gauss_legendre_2d(3,3)) # use for both directions/dimensions
 
 
 
@@ -17,27 +17,25 @@ quad_rules = Dict("quad2d" => Quadrature.gauss_legendre_1d(3)) # use for both di
 # IEN(e,a)
 nnp = 25 # number of nodes
 nez = 5 # sqrt of nnp - # nodes in xdim or ydim
-nel = ((nnp^0.5 - 1) |> Int )^2 # number of elements; updated formula
-nee = 4 # number of equations per element
+nel = ((nnp^0.5 - 2) |> Int )^2 # number of elements; updated formula
+nee = 9 # number of equations per element
 IEN = Dict("quad2d" => zeros(Int, nel, nee)) 
 # standard ordering
 #
-IEN["quad2d"][1,:] = [1, 2, 6, 7]
-IEN["quad2d"][2,:] = [2, 3, 7, 8]
-IEN["quad2d"][3,:] = [3, 4, 8, 9]
-IEN["quad2d"][4,:] = [4, 5, 9, 10]
-IEN["quad2d"][5,:] = [6, 7, 11, 12]
-IEN["quad2d"][6,:] = [7, 8, 12, 13]
-IEN["quad2d"][7,:] = [8, 9, 13, 14]
-IEN["quad2d"][8,:] = [9, 10, 14, 15]
-IEN["quad2d"][9,:] = [11, 12, 16, 17]
-IEN["quad2d"][10,:] = [12, 13, 17, 18]
-IEN["quad2d"][11,:] = [13, 14, 18, 19]
-IEN["quad2d"][12,:] = [14, 15, 19, 20]
-IEN["quad2d"][13,:] = [16, 17, 21, 22]
-IEN["quad2d"][14,:] = [17, 18, 22, 23]
-IEN["quad2d"][15,:] = [18, 19, 23, 24]
-IEN["quad2d"][16,:] = [19, 20, 24, 25]
+IEN["quad2d"][1,:] = [1, 3, 13, 11, 2, 8, 12, 6, 7]
+IEN["quad2d"][2,:] = [2, 4, 14, 12, 3, 9, 13, 7, 8]
+IEN["quad2d"][3,:] = [3, 5, 15, 13, 4, 10, 14, 8, 9]
+
+IEN["quad2d"][4,:] = [6, 8, 18, 16, 7, 13, 17, 11, 12]
+IEN["quad2d"][5,:] = [7, 9, 19, 17, 8, 14, 18, 12, 13]
+IEN["quad2d"][6,:] = [8, 10, 20, 18, 9, 15, 19, 13, 14]
+
+IEN["quad2d"][7,:] = [11, 13, 23, 21, 12, 18, 22, 16, 17]
+IEN["quad2d"][8,:] = [12, 14, 24, 22, 13, 19, 23, 17, 18]
+IEN["quad2d"][9,:] = [13, 15, 25, 23, 14, 20, 24, 18, 19]
+
+
+
 
 # make the list of node locations - is linearized to comply w IEN
 nodes = LinRange(0, 1, nnp) |> collect
@@ -83,12 +81,19 @@ BC_g_list[3] = 0.0
 BC_g_list[4] = 0.0
 
 
-
-mesh = Preprocess.build_mesh(x, [], [], IEN, 1, BC_fix_list, BC_g_list)
-
-
+## Build mesh
+mesh = Preprocess.build_mesh(nodes, [], [], IEN, 1, BC_fix_list, BC_g_list)
 
 ## Assemble the global matrices
+K = Grid2D.assemble_stiffness(m, prop, quad_rules)
+F = Grid2D.assemble_rhs(m, ___, quad_rules)
+
+
+
+
+
+
+
 
 
 ## Solve the system
