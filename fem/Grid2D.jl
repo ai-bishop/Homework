@@ -60,9 +60,9 @@ function assemble_stiffness(mesh, quad_rules)
         for e in 1:nel
             A = ien[e, 1:nen]
             xe = mesh.x[A]
-            
+            ye = mesh.y[A]
 
-            hf = element_stiffness(xe, N, element_quad_rule)
+            hf = element_stiffness(xe, ye, N, element_quad_rule)
 
             # assemble element stiffness into the Global stiffness Matrix
             for loop1 in 1:nee
@@ -77,7 +77,7 @@ function assemble_stiffness(mesh, quad_rules)
     return K
 end
 
-function element_stiffness(xe, N, quad_rules) # looks like element_forcing
+function element_stiffness(xe, ye, N, quad_rules) # looks like element_forcing
 
     ned = 1
     nen = length(xe)
@@ -85,25 +85,21 @@ function element_stiffness(xe, N, quad_rules) # looks like element_forcing
     ke = zeros(nee, nee)
 
     # integration loop
-    for (ξ, η, w) in quad_rules.iterator
+    for (ξ, w) in quad_rules.iterator
 
         # Evaluate the shape function
-        Ne, Nξ, Nη = N(ξ, η) # shape function (not used) and shape function derivative
-
-        # build Jacobian
-        detJ = dot(Nξ, xe) - dot(Nη, ye)
-
-        # create surface flux
-        hf = 1 # arbitrary value
-        h = N(ξ,η)' * hf * detJ * w
-
-        # boundary
-        d_edge = ( (Nξ * ξ)^2 + (Nη * η)^2 * (Nξ * η)^2 + (Nη * ξ)^2)^0.5
-
-        # integrate ke: 
-        # is this accurate ?????
-        ke += h * N(ξ,η)' * N(ξ,η)  * d_edge
+        Ne, Nξ, Nη = N(ξ) # shape function and shape function derivative
         
+        Jac = [(Nξ' * xe) (Nη' * xe); (Nξ' * ye) (Nη' * ye)]
+
+        B = inv(Jac) * [Nξ'; Nη']
+
+        K = 1
+        
+        ke += B' * K * B * det(Jac) * w
+
+
+
     end
 
     return ke

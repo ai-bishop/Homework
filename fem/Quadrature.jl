@@ -19,7 +19,7 @@ struct quadrule2
     ξ::Array
     η::Array
     w1::Array
-    w2::Array
+    # w2::Array
     iterator::Any
 end
 
@@ -46,29 +46,26 @@ end
 
 
 
-function gauss_legendre_2d(m,n)
-    β = @. 0.5 / sqrt(1 - (2 * (1:(m - 1)))^(-2))
-    γ = @. 0.5 / sqrt(1 - (2 * (1:(n - 1)))^(-2))
+function gauss_legendre_2d(n)
+    quad1 = gauss_legendre_1d(n)
 
-    T = diagm(-1 => β, 1 => β)
-    U = diagm(-1 => γ, 1 => γ)
+    nint = n^2
+    w = zeros(n,n)
+    r = zeros(n,n)
+    s = zeros(n,n)
 
-    λ1, V1 = eigen(T)
-    λ2, V2 = eigen(U)
+    for (i,ξ) in enumerate(quad1.ξ)
+        for (j,η) in enumerate(quad1.ξ)
+            r[i,j] = ξ
+            s[i,j] = η
+            w[i,j] = quad1.w[i]*quad1.w[j]
+        end
+    end
+    X = hcat( r[:], s[:] )
+    W = w[:]
 
-    p1 = sortperm(λ1)
-    p2 = sortperm(λ1)
-
-    # nodes
-    ξ = λ1[p1]
-    η = λ2[p2]
-
-    # weights
-    w1 = @. 2V1[1, p1]^2
-    w2 = @. 2V2[1, p2]^2
-
-    return quadrule2("2D GL", m, n, 2, ξ, η, w1, w2,
-                    zip(eachrow(ξ), w1, eachrow(η)))
+    return quadrule("2D GL", nint, 2, X, W,
+                    zip(eachrow(X), W))
 
 end
 
