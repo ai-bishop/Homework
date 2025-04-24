@@ -69,16 +69,35 @@ function gauss_legendre_2d(n)
 
 end
 
-function gauss_legendre_2d_ignored(n)
-    # n is number of nodes in one dimension
-    # getting 2d nodes and weights via 2x 1d nodes and weights  
 
-    # Get 1D nodes and weights
-    x_nodes, x_weights = gauss_legendre_1d(n)
-    y_nodes, y_weights = gauss_legendre_1d(n)
+function gauss_legendre_3d(n)
+    quad1 = gauss_legendre_1d(n)
 
-    return 
+    nint = n^3
+    w = zeros(n,n,n)
+    r = zeros(n,n,n)
+    s = zeros(n,n,n)
+    t = zeros(n,n,n)
+
+    for (i,ξ) in enumerate(quad1.ξ)
+        for (j,η) in enumerate(quad1.ξ)
+            for (k, ρ) in enumerate(quad1.ξ)
+                r[i,j] = ξ
+                s[i,j] = η
+                t[i,j] = ρ
+                w[i,j] = quad1.w[i]*quad1.w[j]*quad1.w[k]
+            end
+        end
+    end
+    X = hcat( r[:], s[:], t[:] )
+    W = w[:]
+
+    return quadrule("3D GL", nint, 3, X, W,
+                    zip(eachrow(X), W))
 
 end
+
+
+
 
 end
