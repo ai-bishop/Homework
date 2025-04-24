@@ -6,6 +6,7 @@ include("Quadrature.jl")
 include("Grid2D.jl")
 include("SimpleVisualization.jl")
 using GLMakie
+using Printf
 
 quad_rules = Dict("quad" => Quadrature.gauss_legendre_2d(3)) # use for both directions/dimensions
 
@@ -130,6 +131,19 @@ r2 = mesh.freefix_range
 q[r1] = T_matrix[r1, r1] \ (  - T_matrix[r1, r2] * q[r2])
 
 # order q
+qt = q[r1]
+T_interior = [  qt[7] qt[8] qt[9];
+                qt[4] qt[5] qt[6];
+                qt[1] qt[2] qt[3]]
 
+T_interior_matlab = [   78.5714   76.1161   69.6429;
+                        63.1696   56.2500   52.4554;
+                        42.8571   33.2589   33.9286]
 
+@printf "Temperature calculated via FEM Code"
+display(T_interior)
 
+@printf "" # display empty LinRange
+
+@printf "Temperature calculated via MATLAB code in HW3"
+display(T_interior_matlab)

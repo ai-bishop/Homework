@@ -13,6 +13,7 @@ clc
 % create temperature matrix
 Temperature = zeros(5,5);
 
+
 % initialize edge values
 % not initializing corners because they are not used in calculation
 Temperature(2:4, 1) = 75; % left of matrix
