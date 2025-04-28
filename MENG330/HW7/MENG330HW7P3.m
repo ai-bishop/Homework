@@ -106,7 +106,7 @@ omega_shaft = rad_rpm * sqrt(grav * numerator / denominator);
 omega_total = sqrt((1/omega_attached^2 + 1/omega_shaft^2)^-1);
 
 % find operating speed
-operating_speed = 0.5 * omega_total
+operating_speed = 0.5 * omega_total;
 
 
 

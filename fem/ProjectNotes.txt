@@ -1,3 +1,15 @@
+Project:
+A 2 dimensional plate.
+make dimensions not have to be consistent
+required: 
+update quadrature.gauss_legendre2d(n) to have 2 inputs - x,y
+create a Plate2D file based off of Bar1D
+Create a visualization program - based off fo SimpleVisualations
+Check existence of appropriate shape functions
+use quadratic 9-node elements - 
 
 
-Created GL3d for n by n by n structures
+
+
+
+Created GL3d for cubic structures
