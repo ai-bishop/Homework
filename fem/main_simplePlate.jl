@@ -70,10 +70,10 @@ for ey in 1:((n-1)/2 |> Int) # ydim
 # 2*ex - 1 + 2*ey, 2*ex + 2*ey, 2*ex+1 + 2*ey
 # 2*ex - 1 + ey, 2*ex + ey, 2*ex + 1 + ey
 # 2*ex - 1, 2*ex, 2*ex + 1
-        IEN["quad2d"][(ex + ex * (ey - 1)),:] = [  
-        2*ex - 1,       2*ex + 1,       2*ex+1 + 2*ey,
-        2*ex - 1,       2*ex,           2*ex + 1 + ey,
-        2*ex + 2*ey,    2*ex - 1 + ey,  2*ex + ey
+        IEN["quad2d"][(ex + (ey - 1)  * ((m-1)/2 |> Int)),:] = [  
+        2*ex - 1 + (ey-1) * 2 * m,   2*ex + 1 + (ey-1) * 2 * m,   2*ex+1 + (ey) * 2 * m,
+        2*ex - 1 + (ey) * 2 * m,   2*ex + 0 + (ey-1) * 2 * m,   2*ex + 1 + (ey - 0.5) * 2 * m,
+        2*ex + (ey) * 2 * m,    2*ex - 1 + (ey-0.5) * 2 * m,  2*ex + (ey-0.5) * 2 * m
         ]
 
     end
@@ -119,17 +119,34 @@ mesh = Preprocess.build_mesh(x, y, [], IEN, 1, BC_fix_list, BC_g_list)
 K_global = Plate2D.assemble_stiffness(mesh, quad_rules)
 F_global = Plate1D.assemble_rhs(mesh, f, quad_rules)
 
+## Solve the system
+q = zeros(mesh.nnp * mesh.ned)
 
+# apply essential BCs in q[r2]
+idx = findall(BC_fix_list)
+q[ mesh.ID[idx] ] = BC_g_list[idx]
 
+# solve
+r1 = mesh.free_range
+r2 = mesh.freefix_range
+q[r1] = T_matrix[r1, r1] \ (  - T_matrix[r1, r2] * q[r2])
 
+# ORDER q !!!
+qt = q[r1]
 
+q_ordered = zeros(m,n)
 
+for ey in 1:n # ydim
+    for ex in 1:m # xdim
 
+        q_ordered[ex, ey] = qt[ex + m*(ey-1)]
 
+# 2*ex - 1 + 2*ey, 2*ex + 2*ey, 2*ex+1 + 2*ey
+# 2*ex - 1 + ey, 2*ex + ey, 2*ex + 1 + ey
+# 2*ex - 1, 2*ex, 2*ex + 1
 
-
-
-
+    end
+end
 
 
 

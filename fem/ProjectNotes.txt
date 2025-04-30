@@ -8,9 +8,7 @@ required:
 Check plotting in SimpleVisualization - syntax in lines!, contour plots?
 
 create a Plate2D file based off of Bar1D
-create main_simplePlate based off of main_simpleBar
-    automate boundary condition creation
-        make BC vals and then set to true when =/= 0?
+
 
 
 presentation
@@ -28,6 +26,6 @@ automated IEN creation
 node locations automated
 make dimensions not have to be consistent
 added autocorrecting to make dimensions cooperate with quadratic 9node elements
-
+do boundary condition creation
 
 
