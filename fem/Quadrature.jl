@@ -69,6 +69,30 @@ function gauss_legendre_2d(n)
 
 end
 
+function gauss_legendre_2dim(m,n)
+    quad1 = gauss_legendre_1d(m)
+    quad2 = gauss_legendre_1d(n)
+
+    nint = n^2
+    w = zeros(n,n)
+    r = zeros(n,n)
+    s = zeros(n,n)
+
+    for (i,ξ) in enumerate(quad1.ξ)
+        for (j,η) in enumerate(quad2.ξ)
+            r[i,j] = ξ
+            s[i,j] = η
+            w[i,j] = quad1.w[i]*quad2.w[j]
+        end
+    end
+    X = hcat( r[:], s[:] )
+    W = w[:]
+
+    return quadrule("2D GL", nint, 2, X, W,
+                    zip(eachrow(X), W))
+end
+
+
 
 function gauss_legendre_3d(n)
     quad1 = gauss_legendre_1d(n)

@@ -16,7 +16,7 @@ quad_rules = Dict("quad" => Quadrature.gauss_legendre_2d(3)) # use for both dire
 
 ## mesh connectivity
 # IEN(e,a)
-nnp = 25 # number of nodes
+nnp = 25 # number of nodes`
 nez = 5 # sqrt of nnp - 1 - # nodes in xdim or ydim
 nel = ((nnp^0.5 - 1) |> Int )^2 # number of elements; updated formula
 nee = 4 # number of equations per element

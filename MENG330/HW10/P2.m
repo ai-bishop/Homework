@@ -33,9 +33,11 @@ p_d = 6; % teeth/in
 % but this causes interference! 4 & 7 dont work!
 % scale up by 3
 N3 = 12; % choose
-N5 = 21;
-N2 = 105;
-N4 = 96;
+N2 = 5 * N3;
+N5 = (7/4) * N3;
+N4 = 8 * N5;
+
+
 
 n_teeth = N2 + N3 + N4 + N5; % answer
 
@@ -49,10 +51,8 @@ d_5 = N5 / p_d;
 
 cl_ = 1; % clearance sum top + bottom
 th_ = 1.5; % side thicknesses
-G1_rad = d_2 / 2;
-G2_rad = d_5 / 2;
 
-Y = cl_ + th_ + G1_rad + G2_rad;
+Y = cl_ + th_ + d_5 + d_4;
 
 
 
