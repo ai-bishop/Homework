@@ -141,13 +141,8 @@ for ey in 1:n # ydim
 
         q_ordered[ex, ey] = qt[ex + m*(ey-1)]
 
-# 2*ex - 1 + 2*ey, 2*ex + 2*ey, 2*ex+1 + 2*ey
-# 2*ex - 1 + ey, 2*ex + ey, 2*ex + 1 + ey
-# 2*ex - 1, 2*ex, 2*ex + 1
-
     end
 end
-
 
 
 
