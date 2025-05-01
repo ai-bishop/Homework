@@ -1,4 +1,4 @@
-module :Plate2D
+module Plate2D
 
 using LinearAlgebra
 include("Shapefunctions.jl")
@@ -29,9 +29,9 @@ function assemble_stiffness(mesh, properties, quad_rules)
         for e in 1:nel
             A = ien[e, 1:nen]
             xe = mesh.x[A]
-            
+            ye = mesh.y[A]
 
-            ke = element_stiffness(xe, N, properties, element_quad_rule)
+            ke = element_stiffness(xe, ye, N, properties, element_quad_rule)
 
             # assemble element stiffness into the Global stiffness Matrix
             for loop1 in 1:nee
@@ -46,7 +46,7 @@ function assemble_stiffness(mesh, properties, quad_rules)
     return K
 end
 
-function element_stiffness(xe, N, properties, quad_rules) # looks like element_forcing
+function element_stiffness(xe, ye, N, properties, quad_rules) # looks like element_forcing
     
     # check probs
     E = properties.E
@@ -62,13 +62,16 @@ function element_stiffness(xe, N, properties, quad_rules) # looks like element_f
     for (ξ, w) in quad_rules.iterator
 
         # Evaluate the shape function
-        Ne, Nξ = N(ξ) # shape function (not used) and shape function derivative
+        Ne, Nξ, Nη = N(ξ) # shape function (not used) and shape function derivative
 
         # build Jacobian
-        detJ = dot(Nξ, xe)
+        Jac = [(Nξ' * xe) (Nη' * xe); (Nξ' * ye) (Nη' * ye)]
 
-        # integrate ke:
-        ke += Nξ * Nξ' * E * A * w / detJ
+        B = inv(Jac) * [Nξ'; Nη']
+
+        K = 1
+        
+        ke += B' * K * B * det(Jac) * w
     end
 
     return ke
@@ -91,8 +94,9 @@ function assemble_rhs(mesh, external_forcing, quad_rules)
         for e in 1:nel
             A = ien[e, 1:nen]
             xe = mesh.x[A]
+            ye = mesh.y[A]
 
-            fe = element_forcing(xe, N, element_quad_rule, external_forcing)
+            fe = element_forcing(xe, ye, N, element_quad_rule, external_forcing)
 
             # assemble element stiffness into the Global stiffness Matrix
             for loop1 in 1:nee
@@ -104,7 +108,7 @@ function assemble_rhs(mesh, external_forcing, quad_rules)
     return F
 end
 
-function element_forcing(xe, N, element_quad_rule, external_forcing)
+function element_forcing(xe, ye, N, element_quad_rule, external_forcing)
     ned = 1
     nen = length(xe)
     nee = ned * nen
@@ -114,14 +118,16 @@ function element_forcing(xe, N, element_quad_rule, external_forcing)
     for (ξ, w) in element_quad_rule.iterator
 
         # Evaluate the shape function
-        Ne, Nξ = N(ξ)
+        Ne, Nξ, Nη = N(ξ)
 
         # evaluate the external loading at x(ξ)
         x = dot(Ne, xe)
-        fext = external_forcing(x)
+        y = dot(Ne, ye)
+
+        fext = external_forcing(x, y)
 
         # build Jacobian
-        detJ = dot(Nξ, xe)
+        detJ = dot(Nξ, xe) - dot(Nη, ye)
 
         # dV0
         dV0 = detJ * w
