@@ -7,13 +7,9 @@ required:
 Check plotting in SimpleVisualization - syntax in lines!, contour plots?
 
 
-
 presentation
     show what done
     couple slides/static pictures
-
-Note: Plate2D should be fully functional.
-
 
 
 Completed:
@@ -28,3 +24,4 @@ do boundary condition creation
 update IEN to correct indexing
 completed main_simplePlate
 create a Plate2D file based off of Bar1D
+update ke in element_forcing

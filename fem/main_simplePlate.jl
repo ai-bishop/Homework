@@ -6,8 +6,10 @@ Pkg.activate(".")
 include("Preprocess.jl")
 include("Quadrature.jl")
 include("Plate2D.jl")
-include("SimpleVisualization.jl")
+include("PlateVisualization.jl")
 using GLMakie
+using Plots
+# using PythonPlot
 
 # initialize dimensions - # nodes each dimension
 # dimensions *must* be odd
@@ -29,7 +31,7 @@ E = 1.0 # young's modulus, [F/m2]
 T = 0.001 # thickness of plate [m]
 L = 3.0 # length of plate [m]
 W = 2.0 # width of plate [m]
-ρ = 1, # density of plate [kg/m3]
+ρ = 1 # density of plate [kg/m3]
 grav = 9.81 # m/s^2
 
 # insert parts into prop
@@ -80,14 +82,14 @@ for ey in 1:((n-1)/2 |> Int) # ydim
 end
 
 # make the list of node locations
-x = LinRange(0, 1, m) |> collect
-for zed in 2:n
-    append!(x, LinRange(0, 1, m) |> collect)
+x = LinRange(0, L, m) |> collect
+for bed in 2:n
+    append!(x, LinRange(0, L, m) |> collect)
 end
 
 y = zeros(n)
-for zed in 2:m
-    append!(y, (zed-1)/(m-1) .+ zeros(n))
+for bed in 2:m
+    append!(y, L * (bed-1)/(m-1) .+ zeros(n))
 
 end
 
@@ -110,14 +112,14 @@ BC_g_list = zeros(1, nnp)
 BC_g_list[1,1] = 0 # fixed deflection of 0
 
 ## Loading force
-f(x) = prop.f0 * x * y
+f(x,y) = prop.f0 * x * y
 
 ## Build mesh
 mesh = Preprocess.build_mesh(x, y, [], IEN, 1, BC_fix_list, BC_g_list)
 
 ## Assemble the global matrix
-K_global = Plate2D.assemble_stiffness(mesh, quad_rules)
-F_global = Plate1D.assemble_rhs(mesh, f, quad_rules)
+K_global = Plate2D.assemble_stiffness(mesh, prop, quad_rules)
+F_global = Plate2D.assemble_rhs(mesh, f, quad_rules)
 
 ## Solve the system
 q = zeros(mesh.nnp * mesh.ned)
@@ -129,20 +131,40 @@ q[ mesh.ID[idx] ] = BC_g_list[idx]
 # solve
 r1 = mesh.free_range
 r2 = mesh.freefix_range
-q[r1] = T_matrix[r1, r1] \ (  - T_matrix[r1, r2] * q[r2])
+q[r1] = K_global[r1, r1] \ (F_global[r1] - K_global[r1, r2] * q[r2])
 
-# ORDER q !!!
-qt = q[r1]
+## Plotting
+# successful? might not be
 
-q_ordered = zeros(m,n)
+xem = LinRange(0, prop.L, m*5)[2:end]
+yem = LinRange(0, prop.L, n*5)[2:end]
 
-for ey in 1:n # ydim
-    for ex in 1:m # xdim
 
-        q_ordered[ex, ey] = qt[ex + m*(ey-1)]
+u_true(x, y) = prop.f0^2 * (x.^2 .+ y.^2)^(3/2) ./ (x .* y)
+# zem = @. u_true(xem, yem')
+zem = [u_true(x, y) for y in yem, x in xem]
 
-    end
-end
+## Plot the result
+
+fig, ax = PlateVisualization.init_plot()
+PlateVisualization.draw_element(ax, mesh, q, linewidth=3, linestyle=:dash, color=:red)
+contour!(zem)
+fig
+
+## Plot the stress
+# σ_true(x,y) = prop.f0 * (x.^2 .+ y.^2).^(1/2) / # inertia
+# fig, ax = PlateVisualization.init_plot(ylabel="Stress")
+# PlateVisualization.draw_element_stress(ax, mesh, q, prop)
+# lines!(ax, LinRange(0, prop.L, 20), σ_true)
+# fig
+
+
+
+
+
+
+
+
 
 
 

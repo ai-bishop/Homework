@@ -90,9 +90,14 @@ function element_stiffness(xe, ye, N, quad_rules) # looks like element_forcing
         # Evaluate the shape function
         Ne, Nξ, Nη = N(ξ) # shape function and shape function derivative
         
-        detJ = dot(Nξ, xe) - dot(Nη, ye)
+        Jac = [(Nξ' * xe) (Nη' * xe); (Nξ' * ye) (Nη' * ye)]
 
-        ke += Nξ * Nξ' * E * A * w / detJ
+        B = inv(Jac) * [Nξ'; Nη']
+
+        K = 1
+        
+        ke += B' * K * B * det(Jac) * w
+
 
 
 

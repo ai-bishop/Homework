@@ -50,8 +50,7 @@ function element_stiffness(xe, ye, N, properties, quad_rules) # looks like eleme
     
     # check probs
     E = properties.E
-    A = properties.A
-    F = properties.f0
+    T = properties.T
 
     ned = 1
     nen = length(xe)
@@ -59,19 +58,20 @@ function element_stiffness(xe, ye, N, properties, quad_rules) # looks like eleme
     ke = zeros(nee, nee)
 
     # integration loop
-    for (ξ, w) in quad_rules.iterator
+    for (X, W) in quad_rules.iterator
 
         # Evaluate the shape function
-        Ne, Nξ, Nη = N(ξ) # shape function (not used) and shape function derivative
+        Ne, Nξ, Nη = N(X) # shape function (not used) and shape function derivative
 
         # build Jacobian
         Jac = [(Nξ' * xe) (Nη' * xe); (Nξ' * ye) (Nη' * ye)]
 
         B = inv(Jac) * [Nξ'; Nη']
-
-        K = 1
         
-        ke += B' * K * B * det(Jac) * w
+        ke += B' * E * T * B * det(Jac) * W
+
+        # ke += Nξ * Nξ' * E * T * Nη * Nη' * W / det(Jac)
+
     end
 
     return ke

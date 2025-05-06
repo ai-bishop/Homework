@@ -104,7 +104,7 @@ function quad2d(r,s) # r = x, s = y
 
     return NN, Nr, Ns
 end
-quad2d(r,s) = quad2d(x[1],x[2])
+quad2d(x) = quad2d(x[1],x[2])
 
 
 
