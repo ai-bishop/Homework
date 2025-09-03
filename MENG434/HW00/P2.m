@@ -9,6 +9,6 @@ hold on
 grid on
 
 % plot function
-t = 0:0.1:10;
-plot(y(t))
+t = 0:0.01:10;
+plot(t, y(t))
 xlim([0,10])
