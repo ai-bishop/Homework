@@ -1,7 +1,12 @@
-% This file is used for the graphing of HW00P7
+% This file is used for of HW00P7
 
-y = @(t) (1/2) * sin(t) - (9/82) * sin(9*t) - (1/2) * cos(t) - (1/82) * cos(9*t) + (83/82) * exp(-t);
+syms y
 
+yprime = @(t,y) -y - cos(9 * y) + sin(t); % ODE solved for y'
+y0 = 0.5; % initial condition
+
+
+[t,y] = ode45(yprime, [0 12], y0); % solves for y(t), given as a series of points
 
 % plotting
 figure 
@@ -9,6 +14,6 @@ hold on
 grid on
 
 % plot function
-t = 0:0.01:12;
-plot(t, y(t))
+%t = 0:0.01:12;
+plot(t, y)
 xlim([0,12])
